@@ -1,18 +1,9 @@
-'use client'
+"use client"
 
 import React, { useEffect, useState } from 'react'
 
-type Plan = {
-  id: string
-  title: string
-  price: number
-  currency: string
-  description?: string
-  validityDays: number
-}
-
-export default function Page() {
-  const [plans, setPlans] = useState<Plan[]>([])
+export default function HomePage() {
+  const [plans, setPlans] = useState([])
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
 
@@ -24,19 +15,19 @@ export default function Page() {
       .catch((err) => console.error(err))
   }, [])
 
-  async function buy(planId: string) {
+  async function buy(planId) {
     setLoading(true)
     setMessage('')
     try {
       const api = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
-      const res = await fetch(`${api}/api/orders`, {
+      const res = await fetch(`${api}/api/plans/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: 'guest', planId, paymentMethod: 'paystack' })
+        body: JSON.stringify({ userId: null, planId, paymentMethod: 'paystack' })
       })
       const data = await res.json()
       if (res.ok) {
-        setMessage(`Order created. Open payment URL: ${data.payment.redirect_url}`)
+        setMessage(`Order created. Payment URL: ${data.payment.redirect_url}`)
       } else {
         setMessage(data.error || 'Payment initiation failed')
       }
@@ -50,11 +41,9 @@ export default function Page() {
 
   return (
     <main style={{ padding: 24, fontFamily: 'Arial, sans-serif' }}>
-      <h1>Whally — Data Plans (Demo)</h1>
-      <p>Simple demo frontend that talks to the bundled backend.</p>
-      {message && (
-        <div style={{ margin: '12px 0', padding: 12, background: '#eef', borderRadius: 6 }}>{message}</div>
-      )}
+      <h1>Whally — Data Plans (MVP)</h1>
+      <p>Demo frontend connected to the backend (MVP).</p>
+      <div style={{ margin: '12px 0' }}>{message}</div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12 }}>
         {plans.map((p) => (
           <div key={p.id} style={{ border: '1px solid #ddd', padding: 12, borderRadius: 8 }}>
@@ -64,9 +53,7 @@ export default function Page() {
               <strong>{p.price} {p.currency}</strong>
             </p>
             <p>Valid for {p.validityDays} days</p>
-            <button onClick={() => buy(p.id)} disabled={loading} style={{ padding: '8px 12px', borderRadius: 6 }}>
-              Buy
-            </button>
+            <button onClick={() => buy(p.id)} disabled={loading} style={{ padding: '8px 12px', borderRadius: 6 }}>Buy</button>
           </div>
         ))}
       </div>

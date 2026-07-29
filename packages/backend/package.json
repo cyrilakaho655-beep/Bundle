@@ -1,17 +1,26 @@
 {
   "name": "@whally/backend",
-  "version": "1.0.0",
-  "description": "Minimal backend for Whally (stub/demo)",
+  "version": "1.0.1",
+  "description": "Whally backend (MVP) - MongoDB, Auth, Plans, Orders",
   "main": "src/index.js",
   "scripts": {
-    "dev": "node src/index.js",
+    "dev": "nodemon src/index.js --watch src",
     "start": "node src/index.js",
+    "seed": "node src/seed.js",
     "test": "echo \"No tests configured\" && exit 0"
   },
   "dependencies": {
     "express": "^4.18.2",
     "cors": "^2.8.5",
     "body-parser": "^1.20.2",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "mongoose": "^7.0.0",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.0",
+    "dotenv": "^16.0.0",
+    "cookie-parser": "^1.4.6"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
   }
 }
