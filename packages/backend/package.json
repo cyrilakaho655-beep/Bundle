@@ -1,7 +1,7 @@
 {
   "name": "@whally/backend",
-  "version": "1.0.1",
-  "description": "Whally backend (MVP) - MongoDB, Auth, Plans, Orders",
+  "version": "1.0.2",
+  "description": "Whally backend (MVP) - MongoDB, Auth, Plans, Orders, Payments",
   "main": "src/index.js",
   "scripts": {
     "dev": "nodemon src/index.js --watch src",
@@ -18,7 +18,8 @@
     "bcryptjs": "^2.4.3",
     "jsonwebtoken": "^9.0.0",
     "dotenv": "^16.0.0",
-    "cookie-parser": "^1.4.6"
+    "cookie-parser": "^1.4.6",
+    "axios": "^1.6.2"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"
