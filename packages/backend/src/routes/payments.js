@@ -3,6 +3,7 @@ const express = require('express');
 const crypto = require('crypto');
 const { initializeTransaction } = require('../services/paystack');
 const Order = require('../models/Order');
+const PaymentEvent = require('../models/PaymentEvent');
 
 const router = express.Router();
 
@@ -41,6 +42,15 @@ router.post('/paystack/webhook', express.raw({ type: 'application/json' }), asyn
     }
 
     const payload = JSON.parse(rawBody.toString('utf8'));
+    const eventId = payload.id || (payload.data && payload.data.id) || `${payload.event}::${(payload.data && payload.data.reference) || Date.now()}`;
+
+    // Idempotency: if we've already processed this event, ignore
+    const existing = await PaymentEvent.findOne({ eventId });
+    if (existing) {
+      console.log('Duplicate webhook event ignored', eventId);
+      return res.json({ ok: true });
+    }
+
     // Handle event
     const event = payload.event || payload.event;
     const data = payload.data || payload;
@@ -60,6 +70,13 @@ router.post('/paystack/webhook', express.raw({ type: 'application/json' }), asyn
           await order.save();
         }
       }
+    }
+
+    // store event for auditing/idempotency
+    try {
+      await new PaymentEvent({ eventId, provider: 'paystack', raw: payload }).save();
+    } catch (e) {
+      console.warn('Failed to store payment event', e && e.message);
     }
 
     res.json({ received: true });

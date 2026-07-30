@@ -63,4 +63,18 @@ router.post('/logout', (req, res) => {
   res.json({ ok: true });
 });
 
+// Add a route to get current authenticated user
+router.get('/me', async (req, res) => {
+  try {
+    const token = req.cookies && req.cookies.token;
+    if (!token) return res.status(200).json({ user: null });
+    const payload = jwt.verify(token, JWT_SECRET);
+    if (!payload || !payload.sub) return res.status(200).json({ user: null });
+    const user = await User.findById(payload.sub).select('-passwordHash').lean();
+    return res.json({ user });
+  } catch (err) {
+    return res.status(200).json({ user: null });
+  }
+});
+
 module.exports = router;

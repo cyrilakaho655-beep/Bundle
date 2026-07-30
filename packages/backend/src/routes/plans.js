@@ -2,6 +2,7 @@ const express = require('express');
 const { v4: uuid } = require('uuid');
 const Plan = require('../models/Plan');
 const Order = require('../models/Order');
+const { authMiddleware, requireRole } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -12,7 +13,7 @@ router.get('/', async (req, res) => {
 });
 
 // Admin create plan
-router.post('/', async (req, res) => {
+router.post('/', authMiddleware, requireRole('Admin'), async (req, res) => {
   const { id, title, description, price, currency = 'GHS', validityDays = 30 } = req.body;
   if (!id || !title || !price) return res.status(400).json({ error: 'id, title and price required' });
   try {
